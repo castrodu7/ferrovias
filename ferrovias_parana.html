@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferrovias do Paraná: História, Engenharia e Futuro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- ESTILOS GERAIS E MAPA DE CORES --- */
+        :root {
+            --color-bg-dark: #0d131a;
+            --color-bg-light: #f4f6f9;
+            --color-primary: #1b4332;
+            --color-primary-light: #2d6a4f;
+            --color-accent: #d4a373;
+            --color-text-dark: #1e293b;
+            --color-text-light: #f8fafc;
+            --color-muted: #64748b;
+            --font-title: 'Cinzel', serif;
+            --font-body: 'Montserrat', sans-serif;
+            --transition-smooth: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-light);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* --- APRESENTAÇÃO / SLIDER CONTAINER --- */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-smooth);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            z-index: 1;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 2;
+        }
+
+        /* --- EFEITOS DE MOVIMENTO DOS ELEMENTOS INTERNOS --- */
+        .slide .animate-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: var(--transition-smooth);
+            transition-delay: 0.3s;
+        }
+
+        .slide .animate-fade {
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+            transition-delay: 0.5s;
+        }
+
+        .slide .animate-scale {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: var(--transition-smooth);
+            transition-delay: 0.4s;
+        }
+
+        .slide.active .animate-up {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide.active .animate-fade {
+            opacity: 1;
+        }
+
+        .slide.active .animate-scale {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* --- BACKGROUNDS E SOBREPOSIÇÕES OBLÍQUAS --- */
+        .slide-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.25) contrast(1.1);
+            z-index: -1;
+            transition: transform 10s ease-out;
+        }
+
+        .slide.active .slide-bg {
+            transform: scale(1.05);
+        }
+
+        /* --- NAVEGAÇÃO INTERATIVA --- */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--color-text-light);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+            color: var(--color-bg-dark);
+            box-shadow: 0 0 15px rgba(212, 163, 115, 0.5);
+        }
+
+        .prev-btn { left: 30px; }
+        .next-btn { right: 30px; }
+
+        .indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--color-accent);
+            width: 35px;
+            border-radius: 6px;
+        }
+
+        /* --- LAYOUTS ESPECÍFICOS DE SLIDES --- */
+        .content-wrap {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Slide Capa */
+        .slide-cover {
+            text-align: center;
+        }
+
+        .slide-cover h1 {
+            font-family: var(--font-title);
+            font-size: 4.5rem;
+            color: var(--color-accent);
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .slide-cover p {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .slide-cover .divider {
+            width: 150px;
+            height: 3px;
+            background: var(--color-accent);
+            margin: 30px auto;
+        }
+
+        /* Layout em Colunas (Texto + Informação/Gráfico) */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .slide-title {
+            font-family: var(--font-title);
+            font-size: 2.8rem;
+            color: var(--color-accent);
+            margin-bottom: 25px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .slide-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 60px;
+            height: 3px;
+            background: var(--color-primary-light);
+        }
+
+        .slide-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+        }
+
+        /* Elementos Visuais Dinâmicos (Cards e Infográficos Customizados) */
+        .info-card {
+            background: rgba(27, 67, 50, 0.3);
+            border-left: 5px solid var(--color-accent);
+            padding: 25px;
+            border-radius: 0 8px 8px 0;
+            backdrop-filter: blur(10px);
+            margin-top: 25px;
+        }
+
+        .info-card h4 {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        /* Linha do Tempo (Timeline) */
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .timeline-item {
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            box-shadow: 0 0 10px var(--color-accent);
+        }
+
+        .timeline-year {
+            font-weight: 700;
+            color: var(--color-accent);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        /* Painel de Dados Técnicos / Métricas */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .metric-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            transition: var(--transition-smooth);
+        }
+
+        .metric-box:hover {
+            background: rgba(45, 106, 79, 0.2);
+            border-color: var(--color-accent);
+            transform: translateY(-5px);
+        }
+
+        .metric-num {
+            font-family: var(--font-title);
+            font-size: 3rem;
+            color: var(--color-accent);
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Mapa Conceitual / Grid de Tópicos */
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .topic-card {
+            background: rgba(13, 19, 26, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: var(--transition-smooth);
+        }
+
+        .topic-card:hover {
+            border-color: var(--color-accent);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+
+        .topic-icon {
+            font-size: 2.5rem;
+            color: var(--color-accent);
+            margin-bottom: 20px;
+        }
+
+        .topic-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .topic-card p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* Rodapé Fixo Uniforme */
+        .slide-footer {
+            position: absolute;
+            bottom: 30px;
+            left: 40px;
+            right: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Responsividade básica para telas menores */
+        @media(max-width: 992px) {
+            .grid-2 { grid-template-columns: 1fr; gap: 30px; }
+            .slide-cover h1 { font-size: 3rem; }
+            .slide-title { font-size: 2.2rem; }
+            .metrics-grid, .topics-grid { grid-template-columns: 1fr; }
+            body { overflow-y: auto; height: auto; }
+            .slide { position: relative; opacity: 1; visibility: visible; height: auto; padding: 80px 20px; }
+            .nav-btn, .indicators { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slider-container">
+        
+        <!-- BOTÕES DE NAVEGAÇÃO -->
+        <button class="nav-btn prev-btn" aria-label="Slide Anterior">&#10094;</button>
+        <button class="nav-btn next-btn" aria-label="Próximo Slide">&#10095;</button>
+
+        <!-- SLIDE 1: CAPA -->
+        <section class="slide active">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1515165504669-423042d330d6?auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="content-wrap slide-cover">
+                <p class="animate-up">Apresentação Estratégica</p>
+                <div class="divider animate-fade"></div>
+                <h1 class="animate-up">Ferrovias do Paraná</h1>
+                <p class="animate-up" style="color: var(--color-accent); font-size: 1.2rem;">História, Engenharia e o Futuro Logístico do Estado</p>
+            </div>
+            <footer class="slide-footer">
+                <span>Infraestrutura e Logística</span>
+                <span>Slide 1 / 6</span>
+            </footer>
+        </section>
+
+        <!-- SLIDE 2: CONTEXTO HISTÓRICO -->
+        <section class="slide">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1532103054090-334e6e60ab29?auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="content-wrap grid-2">
+                <div class="animate-up">
+                    <h2 class="slide-title">A Epopeia do Século XIX</h2>
+                    <p class="slide-text">A história ferroviária do Paraná confunde-se com o próprio desenvolvimento econômico do estado. O isolamento da província em relação ao litoral exigia uma solução de engenharia sem precedentes para escoar a produção de erva-mate e madeira.</p>
+                    <p class="slide-text">A conexão definitiva entre o planalto curitibano e o Porto de Paranaguá marcou a transição para a modernidade republicana.</p>
+                    <div class="info-card">
+                        <h4>O Legado dos Irmãos Rebouças</h4>
+                        <p style="margin:0; font-size:1rem; color:rgba(255,255,255,0.8);">Projetada pelos engenheiros negros Antônio e André Rebouças, a malha superou o preconceito da época e as barreiras geográficas da Serra do Mar.</p>
+                    </div>
+                </div>
+                <div class="timeline-container animate-scale">
+                    <div class="timeline-item">
+                        <div class="timeline-year">1880</div>
+                        <p style="font-size:0.95rem; color:rgba(255,255,255,0.8);">Início solene das obras ferroviárias com a presença do Imperador Dom Pedro II.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1885</div>
+                        <p style="font-size:0.95rem; color:rgba(255,255,255,0.8);">Inauguração do trecho Paranaguá-Curitiba, considerada uma das maiores obras de engenharia do mundo.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1953</div>
+                        <p style="font-size:0.95rem; color:rgba(255,255,255,0.8);">Criação da RVPSC (Rede de Viação Paraná-Santa Catarina), unificando a gestão pública.</p>
+                    </div>
+                </div>
+            </div>
+            <footer class="slide-footer">
+                <span>Evolução Histórica</span>
+                <span>Slide 2 / 6</span>
+            </footer>
+        </section>
+
+        <!-- SLIDE 3: ENGENHARIA DA SERRA DO MAR -->
+        <section class="slide">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1541417904950-b855846fe074?auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="content-wrap grid-2">
+                <div class="animate-up">
+                    <h2 class="slide-title">Desafio na Serra do Mar</h2>
+                    <p class="slide-text">Vencer o desnível abrupto da Serra do Mar exigiu soluções inovadoras e audaciosas para a engenharia civil mundial da época.</p>
+                    <p class="slide-text">O traçado serpenteia abismos profundos, necessitando da construção de dezenas de pontes de ferro e túneis escavados diretamente na rocha maciça tropical.</p>
+                    <p class="slide-text">Hoje, além do tráfego pesado de cargas, a linha sedia o maior e mais expressivo passeio turístico ferroviário do Brasil, ligando Curitiba a Morretes.</p>
+                </div>
+                <div class="metrics-grid animate-scale">
+                    <div class="metric-box">
+                        <div class="metric-num">110</div>
+                        <div class="metric-label">Quilômetros de Extensão</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-num">14</div>
+                        <div class="metric-label">Túneis Escavados</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-num">30</div>
+                        <div class="metric-label">Pontes e Viadutos</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-num">900m</div>
+                        <div class="metric-label">Desnível de Altitude</div>
+                    </div>
+                </div>
+            </div>
+            <footer class="slide-footer">
+                <span>Engenharia e Geografia</span>
+                <span>Slide 3 / 6</span>
+            </footer>
+        </section>
+
+        <!-- SLIDE 4: MALHA ATUAL E CORREDORES -->
+        <section class="slide">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1519074002996-a69e7ac46a42?auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="content-wrap">
+                <div class="animate-up" style="text-align: center; margin-bottom: 30px;">
+                    <h2 class="slide-title">A Malha Logística Atual</h2>
+                    <p class="slide-text" style="max-width: 800px; margin: 0 auto;">O Paraná conta com eixos vitais geridos pela iniciativa privada e parcerias públicas, garantindo o escoamento seguro de safras recordes e contêineres industriais.</p>
+                </div>
+                <div class="topics-grid animate-scale">
+                    <div class="topic-card">
+                        <div class="topic-icon">&#128642;</div>
+                        <h3>Malha Sul (Rumo)</h3>
+                        <p>Principal ramal de escoamento agrícola, conectando as regiões produtoras do Norte, Oeste e Centro do estado diretamente às docas do Porto de Paranaguá.</p>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-icon">&#128739;</div>
+                        <h3>Ferroeste</h3>
+                        <p>Estrada de Ferro Paraná Oeste S.A. Conexão crucial de 248 km entre Cascavel e Guarapuava, aproximando o agronegócio do Oeste paranaense dos trilhos centrais.</p>
+                    </div>
+                    <div class="topic-card">
+                        <div class="topic-icon">&#128682;</div>
+                        <h3>Acesso aos Portos</h3>
+                        <p>Infraestrutura pesada que converte terminais ferroviários internos em extensões diretas dos cais marítimos, reduzindo custos operacionais de frete urbano.</p>
+                    </div>
+                </div>
+            </div>
+            <footer class="slide-footer">
+                <span>Operação e Infraestrutura</span>
+                <span>Slide 4 / 6</span>
+            </footer>
+        </section>
+
+        <!-- SLIDE 5: O PROJETO NOVA FERROESTE -->
+        <section class="slide">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="content-wrap grid-2">
+                <div class="animate-up">
+                    <h2 class="slide-title">Nova Ferroeste</h2>
+                    <p class="slide-text">O maior projeto de expansão ferroviária do Sul do país pretende redefinir a geopolítica logística da América do Sul.</p>
+                    <p class="slide-text">A ampliação criará um corredor de exportação bioceânico integrado, estendendo os trilhos paranaenses até Mato Grosso do Sul e futuramente conectando mercados vizinhos como Paraguai e Argentina.</p>
+                    <div class="info-card" style="border-color: #2d6a4f;">
+                        <h4>Sustentabilidade</h4>
+                        <p style="margin:0; font-size:1rem; color:rgba(255,255,255,0.8);">O modal ferroviário emite até 75% menos gases poluentes comparado ao modal rodoviário para o transporte de grandes volumes.</p>
+                    </div>
+                </div>
+                <div class="metrics-grid animate-scale">
+                    <div class="metric-box" style="grid-column: span 2;">
+                        <div class="metric-num">1.567 km</div>
+                        <div class="metric-label">Extensão Total Projetada</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-num">R$ 35Bi</div>
+                        <div class="metric-label">Investimento Estimado</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-num">38M</div>
+                        <div class="metric-label">Toneladas/Ano de Capacidade</div>
+                    </div>
+                </div>
+            </div>
+            <footer class="slide-footer">
+                <span>Planos de Expansão</span>
+                <span>Slide 5 / 6</span>
+            </footer>
+        </section>
+
+        <!-- SLIDE 6: CONCLUSÃO -->
+        <section class="slide">
+            <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1515165504669-423042d330d6?auto=format&fit=crop&w=1920&q=80');"></div>
+            <div class="content-wrap slide-cover">
+                <h2 class="slide-title animate-up" style="border-left:none; padding:0; text-align:center; font-size:3.5rem;">O Futuro Corre sobre Trilhos</h2>
+                <div class="divider animate-fade"></div>
+                <p class="animate-up" style="max-width:750px; margin:0 auto 40px auto; font-size:1.25rem; line-height:1.8; text-transform:none;">Das picaretas pioneiras do século XIX às modernas locomotivas de alta capacidade, as ferrovias do Paraná mantêm-se como as artérias insubstituíveis do crescimento socioeconômico do Sul do Brasil.</p>
+                <p class="animate-up" style="color: var(--color-accent); font-weight:700; font-size:1.1rem;">Obrigado!</p>
+            </div>
+            <footer class="slide-footer">
+                <span>Encerramento</span>
+                <span>Slide 6 / 6</span>
+            </footer>
+        </section>
+
+        <!-- INDICADORES INFERIORES -->
+        <div class="indicators"></div>
+
+    </div>
+
+    <!-- SCRIPT DE CONTROLE DO SLIDER E MOVIMENTOS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const indicatorsContainer = document.querySelector('.indicators');
+            let currentSlideIndex = 0;
+
+            // Criar dinamicamente os indicadores inferiores (dots)
+            slides.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (index === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(index));
+                indicatorsContainer.appendChild(dot);
+            });
+
+            const dots = document.querySelectorAll('.dot');
+
+            // Função central para mudar de slide com reset de animações
+            function goToSlide(index) {
+                // Remover classe ativa do slide e indicador atual
+                slides[currentSlideIndex].classList.remove('active');
+                dots[currentSlideIndex].classList.remove('active');
+
+                // Atualizar o índice alvo
+                currentSlideIndex = index;
+
+                // Ativar o novo slide e seu respectivo indicador
+                slides[currentSlideIndex].classList.add('active');
+                dots[currentSlideIndex].classList.add('active');
+            }
+
+            function nextSlide() {
+                let nextIndex = currentSlideIndex + 1;
+                if (nextIndex >= slides.length) {
+                    nextIndex = 0; // Volta ao início (Looping)
+                }
+                goToSlide(nextIndex);
+            }
+
+            function prevSlide() {
+                let prevIndex = currentSlideIndex - 1;
+                if (prevIndex < 0) {
+                    prevIndex = slides.length - 1; // Vai para o último
+                }
+                goToSlide(prevIndex);
+            }
+
+            // Eventos dos botões de controle
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+
+            // Suporte à navegação pelas setas do teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                }
+            });
+
+            // Suporte rudimentar a gestos (Swipe) para telas touch
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+
+            document.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+
+            function handleSwipe() {
+                if (touchStartX - touchEndX > 50) {
+                    nextSlide(); // Deslizou para a esquerda
+                }
+                if (touchEndX - touchStartX > 50) {
+                    prevSlide(); // Deslizou para a direita
+                }
+            }
+        });
+    </script>
+</body>
+</html>
